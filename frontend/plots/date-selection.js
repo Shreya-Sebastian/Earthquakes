@@ -292,11 +292,7 @@ export const date_selection = {
             if (filteredData.length > 0) {
                 setTimelineNote(`${filteredData.length} earthquake${filteredData.length === 1 ? '' : 's'} selected.`);
             } else {
-                setTimelineNote(
-                    selectedMonths.includes(UNKNOWN_MONTH)
-                        ? 'No earthquakes in this selection.'
-                        : 'No earthquakes with a known month here.',
-                );
+                setTimelineNote('No recorded earthquakes in this selection.');
                 // Clear the other views too, so they do not keep showing the previous selection
                 const xaxis_label = d3.select('#selectButtonXaxis').property('value');
                 const yaxis_label = d3.select('#selectButtonYaxis').property('value');
