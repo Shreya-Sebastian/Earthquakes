@@ -454,7 +454,8 @@ svg {
 
 /* Status line under the timeline: what the current selection contains */
 .timeline-note {
-    min-height: 1.2em;
+    min-height: 2.4em;
+    line-height: 1.2em;
     margin: 4px 12px 8px;
     font-size: 0.85rem;
     color: #9a3412;

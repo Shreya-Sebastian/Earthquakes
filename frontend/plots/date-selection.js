@@ -291,12 +291,18 @@ export const date_selection = {
             // Tell the user what the selection contains, including when it is empty
             if (filteredData.length > 0) {
                 setTimelineNote(`${filteredData.length} earthquake${filteredData.length === 1 ? '' : 's'} selected.`);
-            } else if (selectedMonths.includes(UNKNOWN_MONTH)) {
-                setTimelineNote('No earthquakes in this selection.');
             } else {
                 setTimelineNote(
-                    'No earthquakes with a recorded month in this selection. Records without a month are in the Unknown column.',
+                    selectedMonths.includes(UNKNOWN_MONTH)
+                        ? 'No earthquakes in this selection.'
+                        : 'No earthquakes with a known month here; see the Unknown column.',
                 );
+                // Clear the other views too, so they do not keep showing the previous selection
+                const xaxis_label = d3.select('#selectButtonXaxis').property('value');
+                const yaxis_label = d3.select('#selectButtonYaxis').property('value');
+                plots['scatter_plot'].render(plots, [allDataFeatures, undefined, xaxis_label, yaxis_label, tsunamiDataFeatures]);
+                plots['geo_map'].update(plots, [[]]);
+                plots['detailed_view'].update(plots, [undefined, undefined]);
             }
 
             // Clear the brush after selection
