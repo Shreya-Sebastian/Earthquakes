@@ -36,10 +36,7 @@ export const date_selection = {
             pointsToFilter,
             (v) => v.length, // Counting occurrences
             (d) => parseInt(d.properties.Year),
-            (d) => {
-                const month = parseInt(d.properties.Mo);
-                return isNaN(month) || month < 1 || month > 12 ? 12 : month - 1; // Map undefined or invalid months to `12`
-            },
+            (d) => monthIndex(d),
         );
 
         // Find the range of years in the dataset
@@ -113,7 +110,7 @@ export const date_selection = {
         // Create scales
         const xScale = d3
             .scaleBand()
-            .domain([...d3.range(0, 12), 12]) // Appending `12` for undefined months
+            .domain([...d3.range(0, 12), 'gap', UNKNOWN_MONTH]) // An empty 'gap' band sets the Unknown column apart from the months
             .range([0, width])
             .padding(0.05);
 
@@ -149,8 +146,8 @@ export const date_selection = {
             .style('fill', (d) => colorScaleBlue(d.count));
 
         // Add x-axis
-        const xAxis = d3.axisBottom(xScale).tickFormat((d) => {
-            if (d === 12) return 'Undef'; // Label the undefined month at the end
+        const xAxis = d3.axisBottom(xScale).tickValues(d3.range(0, 13)).tickFormat((d) => {
+            if (d === UNKNOWN_MONTH) return 'Unknown'; // Records without a month, in their own column at the end
             const formatMonth = d3.timeFormat('%b');
             return formatMonth(new Date(2020, d, 1));
         });
@@ -265,7 +262,7 @@ export const date_selection = {
                 return y0 <= yPosition + yHeight && yPosition <= y1;
             });
 
-            const selectedMonths = d3.range(0, 12).filter((month) => {
+            const selectedMonths = d3.range(0, 13).filter((month) => {
                 const xPosition = xScale(month);
                 const xWidth = xScale.bandwidth();
                 // Check if there's any overlap in the X-axis
@@ -325,10 +322,19 @@ function selectData(earthquakeDataFeatures, startYear, endYear) {
     return selectedData;
 }
 
+// Column index for an earthquake: 0-11 for January to December, UNKNOWN_MONTH when the
+// month is missing or invalid. Used for counting, highlighting and filtering alike, so the
+// "Unknown" column can be selected like any month.
+const UNKNOWN_MONTH = 12;
+function monthIndex(feature) {
+    const month = parseInt(feature.properties.Mo);
+    return isNaN(month) || month < 1 || month > 12 ? UNKNOWN_MONTH : month - 1;
+}
+
 function filterDataByYearAndMonths(data, selectedYearRanges, selectedMonths) {
     return data.filter((feature) => {
         const year = parseInt(feature.properties.Year);
-        const month = parseInt(feature.properties.Mo) - 1; // Adjust for zero-index month
+        const month = monthIndex(feature); // 0-11, or UNKNOWN_MONTH when no month is recorded
         const yearMatches = selectedYearRanges.some((range) => year >= range.start && year <= range.end);
         const monthMatches = selectedMonths.length === 0 || selectedMonths.includes(month);
         return yearMatches && monthMatches;
