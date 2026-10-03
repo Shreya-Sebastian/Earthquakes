@@ -19,9 +19,32 @@ body {
 #topSection {
     display: flex;
     align-items: center;
-    padding-left: 40%;
-    background-color: #f8f9fa;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 24px;
+    background-color: #ffffff;
     border: 1px solid #ddd;
+}
+
+/* Title: a colour bar in the timeline palette, a strong heading and a subtitle */
+.title-block {
+    border-left: 6px solid;
+    border-image: linear-gradient(180deg, #c7e9b4, #41b6c4, #225ea8, #081d58) 1;
+    padding-left: 14px;
+}
+
+.app-title {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #081d58;
+}
+
+.app-subtitle {
+    margin: 2px 0 0;
+    font-size: 0.9rem;
+    color: #5b6470;
 }
 
 #controls {
@@ -386,7 +409,7 @@ svg {
     display: block;
     width: auto;
     border: none;
-    background-color: #007BFF; /* Standout color */
+    background-color: #2e8b57; /* Green, so it is not confused with the blue tsunami points */
     color: #ffffff;
     padding: 10px 15px;
     margin-bottom: 8px;
@@ -399,13 +422,13 @@ svg {
 
 /* Hover effect to reinforce clickability */
 .poi-button:hover {
-    background-color: #0056b3;
+    background-color: #24704a;
 }
 
 /* Selected (clicked) state */
 .poi-button.selected {
     /* Slightly darker or different color to show it's active */
-    background-color: #004593;
+    background-color: #1a5c3a;
 }
 
 /* Content area for displayed text after a point of interest is selected */
