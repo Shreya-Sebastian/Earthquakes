@@ -44,6 +44,14 @@ Every push to `main` builds the site and deploys it to GitHub Pages through `.gi
 
 D3 for the timeline, scatterplot and detail view; OpenLayers for the map and heatmap; Vite for development and builds.
 
+## Changes since the course
+
+Made by Shreya Sebastian in this fork after the course ended:
+
+- Deployment to GitHub Pages.
+- Timeline colours on a log scale with a multi-hue palette, so year ranges with few records stay visible; selections are shown in a contrasting orange-red palette.
+- Header icons removed.
+
 ## Authors
 
 Group project by Wouter Büthker, Alperen Güncan, Amanda and Shreya Sebastian. The original repository is [WouterButhker/Earthquakes](https://github.com/WouterButhker/Earthquakes).
