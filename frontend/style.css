@@ -451,3 +451,12 @@ svg {
     padding: 8px;
     background-color: #f7f7f7;
 }
+
+/* Status line under the timeline: what the current selection contains */
+.timeline-note {
+    min-height: 1.2em;
+    margin: 4px 12px 8px;
+    font-size: 0.85rem;
+    color: #9a3412;
+    text-align: center;
+}

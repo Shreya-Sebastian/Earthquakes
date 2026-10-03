@@ -17,6 +17,7 @@ let dataHistory = []; // Initialize the data history stack
 export const date_selection = {
     render(plots, data) {
         if (data) saveCurrentDataState(data); // Save the current data state before any changes
+        setTimelineNote('');
 
         let [allDataFeatures, pointsToFilter, tsunamiDataFeatures] = data;
 
@@ -269,12 +270,34 @@ export const date_selection = {
                 return x0 <= xPosition + xWidth && xPosition <= x1;
             });
 
-            // Update the cell colors based on selection
-            rows.selectAll('.cell').style('fill', function (d) {
+            // Update the cell colors based on selection. Selected cells also get an outline, so a
+            // selection stays visible even where the cells are empty.
+            const isSelected = function (d) {
                 const isInRange = selectedRanges.some((range) => range.range === this.parentNode.__data__.range);
-                const isMonthSelected = selectedMonths.includes(d.month);
-                return isInRange && isMonthSelected ? colorScaleGreen(d.count) : colorScaleBlue(d.count);
-            });
+                return isInRange && selectedMonths.includes(d.month);
+            };
+            rows.selectAll('.cell')
+                .style('fill', function (d) {
+                    if (!isSelected.call(this, d)) return colorScaleBlue(d.count);
+                    return d.count > 0 ? colorScaleGreen(d.count) : SELECTED_EMPTY_COLOR;
+                })
+                .style('stroke', function (d) {
+                    return isSelected.call(this, d) ? SELECTED_OUTLINE : null;
+                })
+                .style('stroke-width', function (d) {
+                    return isSelected.call(this, d) ? 1.5 : null;
+                });
+
+            // Tell the user what the selection contains, including when it is empty
+            if (filteredData.length > 0) {
+                setTimelineNote(`${filteredData.length} earthquake${filteredData.length === 1 ? '' : 's'} selected.`);
+            } else if (selectedMonths.includes(UNKNOWN_MONTH)) {
+                setTimelineNote('No earthquakes in this selection.');
+            } else {
+                setTimelineNote(
+                    'No earthquakes with a recorded month in this selection. Records without a month are in the Unknown column.',
+                );
+            }
 
             // Clear the brush after selection
             brushG.call(brush.move, null);
@@ -326,6 +349,13 @@ function selectData(earthquakeDataFeatures, startYear, endYear) {
 // month is missing or invalid. Used for counting, highlighting and filtering alike, so the
 // "Unknown" column can be selected like any month.
 const UNKNOWN_MONTH = 12;
+const SELECTED_EMPTY_COLOR = '#d6d6d6';
+const SELECTED_OUTLINE = '#9a3412';
+
+// Short status line under the timeline; cleared whenever the timeline is redrawn
+function setTimelineNote(text) {
+    d3.select('#timeline-note').text(text);
+}
 function monthIndex(feature) {
     const month = parseInt(feature.properties.Mo);
     return isNaN(month) || month < 1 || month > 12 ? UNKNOWN_MONTH : month - 1;
