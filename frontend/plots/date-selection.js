@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 const svg = d3.select('#dateSelection');
 const backButton = d3.select('#date-backButton').node();
 // Margins for svg element
-const margin = { top: 50, right: 30, bottom: 50, left: 60 };
+const margin = { top: 50, right: 45, bottom: 50, left: 60 };
 // Width/height of svg element - initially uninitialized
 let width, height;
 /// Width/height of the legend

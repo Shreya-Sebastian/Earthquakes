@@ -28,9 +28,19 @@ body {
 
 /* Title: a colour bar in the timeline palette, a strong heading and a subtitle */
 .title-block {
-    border-left: 6px solid;
-    border-image: linear-gradient(180deg, #c7e9b4, #41b6c4, #225ea8, #081d58) 1;
-    padding-left: 14px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.title-block::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 6px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #c7e9b4, #41b6c4, #225ea8, #081d58);
 }
 
 .app-title {
