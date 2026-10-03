@@ -50,7 +50,8 @@ Made by Shreya Sebastian in this fork after the course ended:
 
 - Deployment to GitHub Pages.
 - Timeline colours on a log scale with a multi-hue palette, so year ranges with few records stay visible; selections are shown in a contrasting orange-red palette.
-- Header icons removed.
+- Header icons removed; the title now has a subtitle and a colour bar in the timeline palette.
+- Point-of-interest buttons are green, so they are not confused with the blue tsunami points.
 - The column for earthquakes without a recorded month (renamed from Undef to Unknown and set slightly apart) can now be selected like any month; before, those earthquakes were left out of every timeline selection.
 
 ## Authors
