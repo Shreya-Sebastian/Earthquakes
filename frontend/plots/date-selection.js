@@ -295,7 +295,7 @@ export const date_selection = {
                 setTimelineNote(
                     selectedMonths.includes(UNKNOWN_MONTH)
                         ? 'No earthquakes in this selection.'
-                        : 'No earthquakes with a known month here; see the Unknown column.',
+                        : 'No earthquakes with a known month here.',
                 );
                 // Clear the other views too, so they do not keep showing the previous selection
                 const xaxis_label = d3.select('#selectButtonXaxis').property('value');
