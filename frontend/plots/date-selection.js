@@ -125,8 +125,8 @@ export const date_selection = {
 
         // Color scale based on counts
         const countExtent = d3.extent(count_data.flatMap((range) => range.data.map((d) => d.count)));
-        const colorScaleBlue = d3.scaleSequential(d3.interpolateBlues).domain([0, countExtent[1]]);
-        const colorScaleGreen = d3.scaleSequential(d3.interpolateGreens).domain([0, countExtent[1]]);
+        const colorScaleBlue = countColorScale(baseInterpolator, countExtent);
+        const colorScaleGreen = countColorScale(selectedInterpolator, countExtent);
 
         // Append the rows for each year range
         const rows = g
@@ -335,10 +335,24 @@ function filterDataByYearAndMonths(data, selectedYearRanges, selectedMonths) {
     });
 }
 
+// Colours: a multi-hue palette on a log scale, so cells with only a few earthquakes
+// (common in the early year ranges) are still clearly visible next to the busiest ones.
+// The palettes start part-way in to skip their near-white ends; empty cells stay neutral grey.
+const EMPTY_COLOR = '#eeeeee';
+const baseInterpolator = (t) => d3.interpolateYlGnBu(0.2 + 0.8 * t);
+const selectedInterpolator = (t) => d3.interpolateYlOrRd(0.3 + 0.7 * t);
+
+function countColorScale(interpolator, countExtent) {
+    const scale = d3.scaleSequentialLog(interpolator).domain([1, Math.max(2, countExtent[1])]);
+    return (count) => (count > 0 ? scale(count) : EMPTY_COLOR);
+}
+
 function generateLegend(leftOffset, countExtent) {
     const legendGroup = svg.append('g').attr('transform', `translate(${leftOffset},${margin.top - 40})`);
-    const legendScale = d3.scaleLinear().domain([0, countExtent[1]]).range([0, legendWidth]);
-    const legendAxis = d3.axisBottom(legendScale).ticks(5).tickSize(-legendHeight);
+    const maxCount = Math.max(2, countExtent[1]);
+    const legendScale = d3.scaleLog().domain([1, maxCount]).range([0, legendWidth]);
+    const tickValues = [1, 10, 100, 1000, 10000].filter((v) => v < maxCount).concat(maxCount);
+    const legendAxis = d3.axisBottom(legendScale).tickValues(tickValues).tickFormat(d3.format('d')).tickSize(-legendHeight);
 
     // Add a gradient for the legend
     const defs = svg.append('defs');
@@ -350,7 +364,7 @@ function generateLegend(leftOffset, countExtent) {
         .attr('x2', '100%')
         .attr('y2', '0%');
 
-    const legendInterpolator = d3.interpolateBlues;
+    const legendInterpolator = baseInterpolator;
     const numStops = 10;
     d3.range(numStops).forEach((i) => {
         gradient
