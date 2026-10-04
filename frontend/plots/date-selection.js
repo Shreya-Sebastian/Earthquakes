@@ -12,11 +12,14 @@ const legendWidth = 200,
 // Offset for year label from the y-axis (avoid overlap with years)
 const yearLabelOffset = 25;
 
-let dataHistory = []; // Initialize the data history stack
+// Zoom levels of the timeline, outermost first: the earthquakes shown at each level.
+// Only zooming in the timeline adds a level and only the back button removes one;
+// a selection made in another view starts a new stack.
+let zoomStack = [];
 
 export const date_selection = {
-    render(plots, data) {
-        if (data) saveCurrentDataState(data); // Save the current data state before any changes
+    render(plots, data, fromTimelineNavigation = false) {
+        if (!fromTimelineNavigation) zoomStack = [data[1]];
         setTimelineNote('');
 
         let [allDataFeatures, pointsToFilter, tsunamiDataFeatures] = data;
@@ -68,37 +71,21 @@ export const date_selection = {
 
         let rangeSize = 0;
         let yrRange = Math.abs(minYear - maxYear);
-        let lastStateData = [];
-
         if (yrRange > 500) {
             rangeSize = 500;
-            backButton.disabled = true;
-            dataHistory = [data];
-        } else if (yrRange >= 100 && yrRange <= 500) {
+        } else if (yrRange >= 100) {
             rangeSize = 100;
-            backButton.disabled = false;
-            lastStateData = dataHistory[0];
-        } else if (yrRange >= 10 && yrRange <= 100) {
+        } else if (yrRange >= 10) {
             rangeSize = 10;
-            backButton.disabled = false;
-            lastStateData = dataHistory[1];
-        } else if (yrRange >= 0 && yrRange <= 10) {
+        } else {
             rangeSize = 1;
-            backButton.disabled = false;
-            lastStateData = dataHistory[2];
-            if (dataHistory.length == 3) {
-                lastStateData = dataHistory[1];
-            }
         }
 
-        d3.select('#date-backButton').on('click', function () {
-            dataHistory.pop();
-            if (dataHistory.length == 0) {
-                backButton.disabled = true;
-            }
-            else {
-                plots['date_selection'].update(plots, [allDataFeatures, lastStateData[1], tsunamiDataFeatures]);
-            }
+        backButton.disabled = zoomStack.length <= 1;
+        d3.select('#date-backButton').on('click', () => {
+            if (zoomStack.length <= 1) return;
+            zoomStack.pop();
+            this.render(plots, [allDataFeatures, zoomStack[zoomStack.length - 1], tsunamiDataFeatures], true);
         });
         let yearRanges = createYearRanges(minYear, maxYear, rangeSize);
 
@@ -171,7 +158,8 @@ export const date_selection = {
                     console.log('No data found for selected year range');
                     return;
                 }
-                plots['date_selection'].update(plots, [allDataFeatures, selectedData, tsunamiDataFeatures]);
+                zoomStack.push(selectedData);
+                this.render(plots, [allDataFeatures, selectedData, tsunamiDataFeatures], true);
             });
 
         // Add month label
@@ -309,13 +297,6 @@ export const date_selection = {
         this.render(plots, data);
     },
 };
-
-function saveCurrentDataState(data) {
-    const dataString = JSON.stringify(data);
-    if (!dataHistory.some((history) => JSON.stringify(history) === dataString)) {
-        dataHistory.push(JSON.parse(dataString)); // Deep copy to preserve data integrity
-    }
-}
 
 function aggregateDataByYearRange(yearMonthData, startYear, endYear) {
     const filteredData = yearMonthData.filter((d) => d.year >= startYear && d.year <= endYear);
