@@ -7,7 +7,7 @@ An interactive web visualisation of significant earthquakes and tsunamis around 
 ## Features
 
 - **World map.** Every earthquake as a point on an OpenLayers map, with tectonic plate boundaries drawn on top. Dot size and colour can be mapped to magnitude, focal depth, Modified Mercalli Intensity, deaths, injuries, damage or houses destroyed and damaged; colour can also show the country or whether the earthquake caused a tsunami. A toggle switches the points to a heatmap, and earthquakes can be selected on the map by clicking or Ctrl-dragging a box.
-- **Timeline.** A grid of year ranges against months, coloured by the number of earthquakes. Click and drag to select a timeframe and zoom into it; a button steps back to the previous year ranges.
+- **Timeline.** A grid of year ranges against months, coloured by the number of earthquakes. Click and drag to select a timeframe; click a year-range label to zoom into it, and a button steps back to the previous year ranges.
 - **Scatterplot.** Any two attributes against each other (magnitude against focal depth by default). Click or Ctrl-drag to select earthquakes, which are then highlighted on the map and timeline.
 - **Detail view.** The full record of a selected earthquake, including its date and time, impact figures and any tsunamis it caused.
 - **Tsunami filter.** Restricts every view to earthquakes that caused a tsunami.
